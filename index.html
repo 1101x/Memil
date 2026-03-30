@@ -274,7 +274,7 @@ function tick(ts) {
     f.px += f.vx * dt;
     f.py += f.vy * dt;
     f.t  += dt;
-    f.alpha        = Math.max(0, 1 - Math.pow(f.t / 90, 2.0));
+    f.alpha        = Math.max(0, 1 - Math.pow(f.t / 90, 3.0));
     f.obs.x        = f.originX + f.px * scaleX;
     f.obs.y        = f.originY + f.py * scaleY;
     f.obs.alpha    = f.alpha;
