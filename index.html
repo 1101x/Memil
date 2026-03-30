@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -9,266 +8,330 @@
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-html, body {
-width: 100%;
-background: #fff;
-font-family: ‘Nanum Myeongjo’, serif;
-overflow-x: hidden;
--webkit-tap-highlight-color: transparent;
-}
-
-#container {
-position: relative;
-padding: 40px 24px 80px;
-}
-
-#layout-svg {
-width: 100%;
-display: block;
-overflow: visible;
-}
-
-.word {
-font-family: ‘Nanum Myeongjo’, serif;
-font-size: 16px;
-fill: #000;
-cursor: pointer;
-}
-
-.flower-group {
-pointer-events: none;
-}
+  html, body {
+    width: 100%;
+    background: #fff;
+    font-family: 'Nanum Myeongjo', serif;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #header {
+    padding: 52px 24px 32px;
+  }
+  #header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  #header p {
+    font-size: 14px;
+    color: #888;
+  }
+  #container {
+    padding: 0 24px 100px;
+  }
+  #layout-svg {
+    width: 100%;
+    display: block;
+    overflow: visible;
+  }
+  .word {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 16px;
+    fill: #000;
+    cursor: pointer;
+  }
 </style>
-
 </head>
 <body>
+
+<div id="header">
+  <h1>메밀꽃 필 무렵</h1>
+  <p>이효석</p>
+</div>
+
 <div id="container">
   <svg id="layout-svg" xmlns="http://www.w3.org/2000/svg"></svg>
 </div>
 
-<script type="module">
-import { prepare, layout } from 'https://esm.sh/@chenglou/pretext@0.1.3';
-
-/* ── 텍스트 ── */
-const TEXT = `메밀꽃 필 무렵 여름 장이란 애시당초에 글러서, 해는 아직 중천에 있건만 장판은 벌써 쓸쓸하고 더운 햇발이 벌여 놓은 전 휘장 밑으로 등줄기를 훅훅 볶는다. 파장 기분이 난 지 오래다. 그러기에 예서 저서 사람들이 흩어져 버리고 있어도 허 생원은 마음이 다 부서졌다는 기색도 아니었다. 산 너머 남의 들에 물이라도 들면 그만이지, 반날 동안이나 허탕만 치다 돌아가는 것들이라 따라갈 사람도 없다. 허 생원은 기어이 동이를 낚아 세웠다. 그래, 올 장에도 닭 한 마리 흥정을 못 했느냐. 동이는 조금 발끈하는 눈치였으나 허 생원의 말이 귀에 선 까닭에 멈칫하고 있었다. 달이 어지간히 기울어졌다. 산허리는 온통 메밀밭이어서 피기 시작한 꽃이 소금을 뿌린 듯이 흐뭇한 달빛에 숨이 막힐 지경이다. 붉은 대궁이 향기같이 애잔하고, 나귀들의 걸음도 시원하다. 길이 좁은 까닭에 세 사람은 나귀를 타고 외줄로 늘어섰다. 봉평은 지금도 바뀌지 않았으리라. 예전이나 이제나 달이 뜨는 봉평은 언제나 그리운 곳으로 마음속에 남아 있는 것이었다. 메밀꽃이 핀 밤은 참으로 잔인하리만치 아름다워서, 보는 이의 마음까지 하얗게 씻어 내는 것 같았다.`;
+<script>
+/* ── 본문 ── */
+const PARAGRAPHS = [
+  `여름 장이란 애시당초에 글러서, 해는 아직 중천에 있건만 장판은 벌써 쓸쓸하고, 더운 햇발이 벌여놓은 전 휘장으로 등줄기를 훅훅 볶는다. 마을 사람들은 거지반 돌아간 뒤요, 팔리지 못한 나뭇군 패가 길거리에 궁싯거리고 있으나, 석유병이나 받고 고깃 마리나 사면 족할 이 축들을 바라고 언제까지든지 버티고 있을 법은 없다.`,
+  `춥춥스럽게 날아드는 파리 떼도 장난꾼 각다귀들도 귀치 않다. 얼금뱅이요, 왼손잡이인 드팀전의 허생원은 기어이 동업의 조선달을 나꾸어 보았다.`,
+  `"그만 거둘까?" "잘 생각했네. 봉평장에서 한 번이나 흐뭇하게 사 본일 있을까? 내일 대화장에서나 한 몫 벌어야겠네." "오늘밤은 밤을 새서 걸어야 될걸." "달이 뜨렷다?"`,
+  `절렁절렁 소리를 내며 조선달이 그날 산 돈을 따지는 것을 보고 허생원은 말뚝에서 넓은 휘장을 걷고 벌여놓았던 물건을 거두기 시작하였다. 무명필과 주단바리가 두고리짝에 꼭 찼다. 멍석 위에는 천 조각이 어수선하게 남았다.`,
+  `다른 축들도 벌써 거진 전들을 걷고 있었다. 약빠르게 떠나는 패도 있었다. 어물장수도, 땜쟁이도, 엿장수도, 생강장수도, 꼴들이 보이지 않았다. 내일은 진부와 대화에 장이 선다. 축들은 그 어느 쪽으로든지 밤을 새며 육칠십리 밤길을 타박거리지 않으면 안된다. 장판은 잔치 뒷마당같이 어수선하게 벌어지고 술집에서는 싸움이 터져 있었다. 주정꾼 욕지거리에 섞여 계집의 앙칼진 목소리가 찢어졌다. 장날 저녁은 정해 놓고 계집의 고함소리로 시작되는 것이다.`,
+  `"생원, 시침을 떼두 다아네...... 충주집 말야." 계집 목소리로 문득 생각 난 듯이 조선달은 비죽이 웃는다. "화중지병이지. 연소패들을 적수로 하구야 대거리가 돼야 말이지." "그렇지두 않을 걸. 축들이 사족을 못쓰는 것두 사실은 사실이나, 아무리 그렇다. 군 해두 왜 그 동이 말일세. 감쪽같이 충줏집을 후린 눈치거든." "무어 그 애숭이가? 물건 가지고 나꾸었나부지. 착실한 녀석인 줄 알았더니." "그 길만은 알 수 있나..... 궁리 말구 가보세나 그려. 내 한 턱 씀세."`,
+  `그다지 마음이 당기지 않는 것을 좇아갔다. 허생원은 계집과는 연분이 멀었다. 얼음뱅이 상판을 쳐들고 대어설 숫기는 없었으나, 계집 편에서 정을 보낸 일도 없었고, 쓸쓸하고 뒤틀린 반생이었다. 충줏집을 생각만 하여도 철없이 얼굴이 붉어지고, 발밑이 떨리고 그 자리에 소스라쳐 버린다.`,
+  `충줏집 문을 들어서서 술좌석에서 짜장 동이를 만났을 때에는 어찌 된 서슬인지 발끈 화가 나 버렸다. 녀석이 제법 난질꾼인데, 꼴사납다. 머리에 피도 안마른 녀석이 낮부터 술 처먹고 계집과 농탕이야. 장돌뱅이 망신만 시키고 돌아다니누나. 결 김에 따귀를 하나 갈겨 주지 않고는 배길 수 없었다.`,
+  `그러나 한 마디도 대거리하지 않고 하염없이 나가는 꼴을 보려니, 도리어 측은히 여겨졌다. 아직도 서름서름한 사인데 너무 과하지 않았을까 하고 마음이 섬짓해졌다. 한참 법석을 친 후이다. 담도 생긴 데다가 웬일인지 흠뻑 취해 보고 싶은 생각도 있어서 허생원은 주는 술잔이면 거의 다 들이켰다.`,
+  `거나 해짐을 따라 계집 생각보다도 동이의 뒷일이 한결같이 궁금해졌다. 그렇기 때문에, 얼마나 지난 뒤인지 동이가 헐레벌떡거리며 황급히 부르러 왔을 때에는, 마시던 잔을 그 자리에 던지고 정신없이 허덕이며 충주집을 뛰어나간 것이었다.`,
+  `"생원 당나귀가 바를 끊구 야단이예요." "각다귀들 장난이지 필연코." 짐승이도 짐승이려니와 동이의 마음씨가 가슴을 울렸다. "부락스런 녀석들이라 어쩌는수 있어야죠." "나귀를 몹시 구는 녀석들은 그냥 두지 않을걸."`,
+  `반평생을 같이 지내온 짐승이었다. 같은 주막에서 잠자고 같은 달빛에 젖으면서 장에서 장으로 걸어다니는 동안에 이십년의 세월이 사람과 짐승을 함께 늙게 하였다. 굽은 벌써 더 자라나기는 틀렸고 닳아버린 철 사이로는 피가 빼짓이 흘렀다. 냄새만 맡고도 주인을 분간하였다. 호소하는 목소리로 야단스럽게 울며 반겨한다.`,
+  `어린아이를 달래듯이 목덜미를 어루만져 주니 나귀는 코를 벌름거리고 입을 투르르거렸다. 콧물이 튀었다. 굴레가 벗어지고 안장도 떨어졌다. 요 몹쓸 자식들, 하고 허생원은 호령을 하였으나 패들은 벌써 줄행랑을 논 뒤요 몇 남지 않은 아이들이 호령에 놀래 비슬비슬 멀어졌다.`,
+  `"우리들 장난이 아니우. 암놈을 보고 저 혼자 발광이지." 코흘리개 한 녀석이 멀리서 소리를 쳤다. "김첨지 당나귀가 가 버리니까 온통 흙을 차고 거품을 흘리면서 미친소같이 날뛰는걸. 꼴이 우스워 우리는 보고만 있었다우." 아이들은 앙돌아진 투로 소리를 치며 깔깔 웃었다.`,
+  `"늙은 주제에 암샘을 내는 셈야. 저놈의 짐승이." 아이의 웃음소리에 허생원은 주춤하면서 기어코 견딜 수 없어 채칙을 들더니 아이들을 쫓았다. "쫓으려거든 쫓아보지. 왼손잡이가 사람을 때려." 왼손잡이는 아이 하나도 후릴수 없다. 그만 채찍을 던졌다.`,
+  `"그만 떠나세. 녀석들과 어울리다가는 한이 없어. 장판의 각다귀들이란 어른보다도 더 무서운 것들인걸." 조선달과 동이는 각각 제 나귀에 안장을 얹고 짐을 싣기 시작하였다. 해가 꽤 많이 기울어진 모양이었다.`,
+  `드팀전 장돌림을 시작한 지 이십년이나 되어도 허생원은 봉평장을 빼논적은 드물었다. 장에서 장으로 가는 길의 아름다운 강산이 그대로 그에게는 그리운 고향이었다. 반날 동안이나 뚜벅뚜벅 걷고 장터있는 마을에 거의 가까왔을 때, 거친 나귀가 한바탕 우렁차게 울면, 허생원은 변치 않고 언제든지 가슴이 뛰놀았다.`,
+  `젊은 시절에는 알뜰하게 벌어 돈 푼이나 모아 본 적도 있기는 있었으나, 읍내에 백중이 열린 해 호탕스럽게 놀고 투전을 하고 하여 사흘 동안에 다 털어 버렸다. 나귀까지 팔게 된 판이었으나 애끊는 정분에 그것만은 이를 물고 단념하였다. 결국 도로아미타불로 장돌림을 다시 시작할 수 밖에는 없었다.`,
+  `호탕스럽게 놀았다고는 하여도 계집 하나 후려보지도 못하였다. 계집이란 쌀쌀하고 매정한 것이었다. 일신에 가까운 것이라고는 언제나 변함없는 한 필의 당나귀였다. 그렇다고는 하여도 꼭 한번의 첫일을 잊을 수는 없었다. 뒤에도 처음에도 없는 단 한번의 괴이한 인연!`,
+  `"달밤이었으나 어떻게 해서 그렇게 됐는지 지금 생각해두 도무지 알 수 없어." 허생원은 오늘밤도 또 그 이야기를 끄집어 내려는 것이다. 조선달은 친구가 된 이래 귀에 못이 박히도록 들어왔다. 그렇다고 싫증을 낼 수도 없었으나, 허생원은 시치미를 떼고 되풀이할 대로는 되풀이하고야 말았다.`,
+  `"달밤에는 그런 이야기가 격에 맞거든." 이지러는 졌으나 보름을 갓 지난 달은 부드러운 빛을 흐뭇이 흘리고 있다. 대화까지는 팔십리의 밤길, 고개를 둘이나 넘고 개울을 하나 건너고 벌판과 산길을 걸어야 된다.`,
+  `길은 지금 긴 산허리에 걸려 있다. 밤중을 지난 무렵인지 죽은 듯이 고요한 속에서 짐승같은 달의 숨소리가 손에 잡힐 듯이 들리며, 콩포기와 옥수수 잎새가 한층 달에 푸르게 젖었다. 산허리는 온통 메밀밭이어서 피기 시작한 꽃이 소금을 뿌린 듯이 흐뭇한 달빛에 숨이 막힐 지경이다. 붉은 대궁이 향기같이 애잔하고 나귀들의 걸음도 시원하다.`,
+  `길이 좁은 까닭에, 세 사람은 나귀를 타고 외줄로 늘어섰다. 방울소리가 시원스럽게 딸랑딸랑 메밀밭께로 흘러간다. 앞장선 허생원의 이야기소리는 꽁무니에 선 동이에게는 확적히는 안들렸으나, 그는 그대로 서운한 제멋에 적적하지는 않았다.`,
+  `"장 선 꼭 이런 날 밤이었네. 객주집 토방이란 무더워서 잠이 들어야지. 밤중은 돼서 혼자 일어나 개울가에 목욕하러 나갔지. 봉평은 지금이나 그제나 마찬가지지. 보이는 곳마다 메밀밭이어서 개울가가 어디 없이 하얀 꽃이야. 달이 너무도 밝은 까닭에 옷을 벗으러 물방앗간으로 들어가지 않았나. 거기서 난데없는 성서방네 처녀와 마주쳤단 말이네. 봉평서야 제일가는 일색이었지 팔자에 있었나 부지."`,
+  `"날 기다리는 것은 아니었으나 그렇다고 달리 기다리는 놈팽이가 있은 것두 아니었네. 처녀는 울고 있단 말야. 그러나 처녀란 울 때 같이 정을 끄는 때가 있을까! 이럭저럭 이야기가 되었네--- 생각하면 무섭고도 기막힌 밤이었어."`,
+  `"다음 장도막에는 벌써 온 집안이 사라진 뒤였네. 첫날밤이 마지막 밤이었지. 그때부터 봉평이 마음에 든 것이 반평생을 두고 다니게 되었네. 평생인들 잊을 수 있겠나."`,
+  `"수 좋았지. 그렇게 신통한 일이란 쉽지 않어. 난 가을까지만 하구 이 생애와두 하직하려네. 대화쯤에 조그만 전방이나 하나 벌이구 식구들을 부르겠어." "옛 처녀나 만나면 같이나 살까···. 난 거꾸러질 때까지 이 길 걷고 저 달 볼테야."`,
+  `"처,천만에요. 되려 부끄러워요. 계집이란 지금 웬 제격인가요. 자나 깨나 어머니생각뿐인데요." "아비 어미란 말에 가슴이 터지는 것도 같았으나 제겐 아버지가 없어요. 피붙이라고는 어머니 하나뿐인 걸요." "당초부터 없어요."`,
+  `"부끄러워서 말하지 않으랴 했으나 정말이예요. 제천 촌에서 달도 차지 않은 아이를 낳고 어머니는 집을 쫓겨났죠. 그러기 때문에 지금까지 아버지 얼굴도 본 적 없고 있는 고장도 모르고 지내와요."`,
+  `고개가 앞에 놓인 까닭에 세 사람은 나귀를 내렸다. 둔덕은 험하고 입을 벌리기도 대견하여 이야기는 한동안 끊겼다. 허생원은 숨이 차 몇번이고 다리를 쉬지 않으면 안되었다. 고개를 넘을 때마다 나이가 알렷다. 동이 같이 젊은 축이 그지없이 부러웠다.`,
+  `고개 너머는 바로 개울이었다. 장마에 흘러버린 널다리가 아직도 걸리지 않은채로 있는 까닭에 벗고 건너야 되었다. 금방 땀을 흘린 뒤였으나 밤 물은 뼈를 찔렀다.`,
+  `"모친의 친정은 원래부터 제천이었던가?" "웬걸요. 시원스리 말은 안해 주나 봉평이라는 것만은 들었죠." "봉평? 그래 그 아비 성은 무엇이구?" "알 수 있나요. 도무지 듣지를 못했으니까." "그, 그렇겠지" 하고 중얼거리며 흐려지는 눈을 까물까물 하다가 허생원은 경망하게도 발을 빗디었다.`,
+  `앞으로 꼬구라지기가 바쁘게 몸째 풍덩 빠져버렸다. 옷째 쫄딱 젖으니 물에 젖은 개보다도 참혹한 꼴이었다. 동이는 물 속에서 어른을 해깝게 업을 수 있었다. "이렇게까지 해서 안됐네. 내 오늘은 정신이 빠진 모양이야." "염여하실 것 없어요."`,
+  `"가을에는 봉평에 모셔 오려고 생각 중인데요. 이를 물고 벌면 이럭저럭 살아갈 수 있겠죠." "아무렴, 기특한 생각이야. 가을이랫다?" 동이의 탐탁한 등어리가 뼈에 사무쳐 따뜻하다. 물을 다 건넜을 때에는 도리어 서글픈 생각에 좀 더 업혔으면도 하였다.`,
+  `"나귀야, 나귀 생각하다 실족을 했어. 저 꼴에 제법 새끼를 얻었단 말이지. 읍내 강릉집 피마에게 말일세. 귀를 쭝긋 세우고 달랑달랑 뛰는 것이 나귀새끼 같이 귀여운 것이 있을까!" "사람을 물에 빠치울 젠 딴은 대단한 나귀새끼군!"`,
+  `허생원은 젖은 옷을 웬만큼 짜서 입었다. 이가 덜덜 갈리고 가슴이 떨리며 몹시도 추웠으나 마음은 알 수 없이 둥실둥실 가벼웠다. "주막까지 부지런히들 가세나. 뜰에 불을 피우고, 훗훗이 쉬어. 내일 대화장 보고는 제천이다." "오래간만에 가보고 싶어. 동행하려나, 동이?"`,
+  `나귀가 걷기 시작하였을 때, 동이의 채찍은 왼손에 있었다. 오랫동안 아둑신이 같이 눈이 어둡던 허생원도 요번만은 동이의 왼손잡이가 눈에 띄지 않을 수 없었다. 걸음도 해깝고 방울소리가 밤 벌판에 한층 청청하게 울렸다. 달도 어지간히 기울어졌다.`,
+];
 
 /* ── 상수 ── */
-const FONT_SIZE   = 16;
-const LINE_H      = 26;
-const FLOWER_SIZE = 80;   // 꽃 하나의 점유 반경 (px)
-const PAD         = 4;    // 글자와 꽃 사이 여백
+const FONT_SIZE    = 16;
+const LINE_H       = 28;
+const PARA_GAP     = 18;
+const PAD          = 6;
+const STATIC_SIZE  = 25;  // 42 * 0.6  // 고정 꽃 obstacle 지름 (실제 꽃 외접에 맞게)
+const ANIM_SIZE    = 23;  // 38 * 0.6  // 애니메이션 꽃 obstacle 지름
 
-const svg    = document.getElementById('layout-svg');
-const cont   = document.getElementById('container');
+/* ── DOM ── */
+const svgEl = document.getElementById('layout-svg');
+const cont  = document.getElementById('container');
 
-/* ── 꽃 목록 [{x, y}] — 뷰박스 좌표 ── */
-let flowers = [];
+/* ── 상태 ── */
+let obstacles  = [];  // { id, x, y, size, alpha, static }
+let animFlowers = []; // 날아다니는 꽃 물리 상태
+let containerW = 0;
+let rafId      = null;
 
-/* ── Pretext prepare (폰트 로드 후) ── */
-let prepared;
+/* ── 텍스트 측정 (Pretext 핵심 원리: 오프스크린 캔버스 캐싱) ── */
+const FONT_STR = `${FONT_SIZE}px "Nanum Myeongjo", serif`;
+const mct      = document.createElement('canvas').getContext('2d');
+mct.font       = FONT_STR;
+const _cache   = new Map();
 
-async function init() {
-  // 폰트 로드 대기
-  await document.fonts.ready;
-  prepared = prepare(TEXT, { font: `${FONT_SIZE}px "Nanum Myeongjo"` });
-  renderLayout();
+function measure(w) {
+  if (_cache.has(w)) return _cache.get(w);
+  const v = mct.measureText(w).width;
+  _cache.set(w, v);
+  return v;
 }
+const SPACE_W = measure(' ');
 
-/* ────────────────────────────────────────
-   핵심: 꽃 위치를 obstacle로 삼아
-   각 줄에서 꽃과 겹치는 구간을 피해
-   텍스트를 배치
-──────────────────────────────────────── */
-function renderLayout() {
-  const W = cont.clientWidth - 48;   // 24px 패딩 양쪽
-
-  // 꽃이 없으면 단순 layout
-  const lines = layoutWithObstacles(W);
-
-  svg.innerHTML = '';
-  const ns = 'http://www.w3.org/2000/svg';
-
-  // 총 높이 계산
-  let maxY = 0;
-  for (const seg of lines) {
-    if (seg.y + LINE_H > maxY) maxY = seg.y + LINE_H;
-  }
-  svg.setAttribute('viewBox', `0 0 ${W} ${maxY + 20}`);
-  svg.setAttribute('height', maxY + 20);
-
-  // 텍스트 세그먼트 렌더
-  for (const seg of lines) {
-    const t = document.createElementNS(ns, 'text');
-    t.setAttribute('x', seg.x);
-    t.setAttribute('y', seg.y + FONT_SIZE);
-    t.setAttribute('class', 'word');
-    t.setAttribute('data-sx', seg.x + seg.w / 2);
-    t.setAttribute('data-sy', seg.y + LINE_H / 2);
-    t.textContent = seg.text;
-    svg.appendChild(t);
-  }
-
-  // 꽃 렌더 (텍스트 위에)
-  for (const f of flowers) {
-    const g = drawFlower(ns, f.x, f.y, f.size);
-    svg.appendChild(g);
-  }
-}
-
-/* ── 줄마다 꽃 obstacle을 피해 단어를 배치 ── */
-function layoutWithObstacles(W) {
-  if (!prepared) return [];
-
-  const words  = TEXT.split(/\s+/).filter(Boolean);
-  const result = [];
-
-  // 오프스크린 캔버스로 단어 너비 측정 (Pretext 내부와 동일한 엔진 활용)
-  const mc  = document.createElement('canvas');
-  const mct = mc.getContext('2d');
-  mct.font  = `${FONT_SIZE}px "Nanum Myeongjo"`;
-
-  function ww(word) { return mct.measureText(word).width; }
-  function sw()     { return ww(' '); }
-
-  let y   = 0;
-  let wi  = 0;
-  const SPACE = sw();
-
-  while (wi < words.length) {
-    // 이 줄(y)에서 꽃들이 차지하는 x 구간 목록
-    const blocked = getBlockedRanges(y, W);
-
-    // 사용 가능한 x 슬롯들 (꽃을 피한 구간)
-    const slots = invertRanges(blocked, W);
-
-    let placed = false;
-    for (const slot of slots) {
-      let x = slot.start;
-      // 이 슬롯 안에서 단어 최대한 채우기
-      let first = true;
-      while (wi < words.length) {
-        const word  = words[wi];
-        const wordW = ww(word);
-        const need  = first ? wordW : SPACE + wordW;
-
-        if (x + need > slot.end - PAD) break;
-
-        result.push({ text: word, x: first ? x : x, y, w: wordW });
-        x    += need;
-        wi   += 1;
-        first = false;
-      }
-      placed = true;
-    }
-
-    if (!placed || slots.length === 0) {
-      // 이 줄 전체가 막혀있으면 그냥 넘어감
-    }
-
-    y += LINE_H;
-    if (y > 5000) break; // 안전장치
-  }
-
-  return result;
-}
-
-/* ── y줄에서 꽃들이 차지하는 x 범위 반환 ── */
-function getBlockedRanges(y, W) {
+/* ── obstacle → 막힌 x 구간 ── */
+function blockedRanges(y, W) {
+  const mid    = y + LINE_H / 2;
   const ranges = [];
-  const lineTop    = y;
-  const lineBottom = y + LINE_H;
-
-  for (const f of flowers) {
-    const fy = f.y;
-    const fr = f.size / 2 + PAD;
-
-    // 이 줄이 꽃의 수직 범위와 겹치는지
-    if (lineBottom < fy - fr || lineTop > fy + fr) continue;
-
-    // x 방향 차단 구간
-    const dy   = Math.min(Math.abs(lineTop - fy), Math.abs(lineBottom - fy));
-    const chord = Math.sqrt(Math.max(0, fr * fr - dy * dy));
-    const x0   = Math.max(0,  f.x - chord);
-    const x1   = Math.min(W,  f.x + chord);
+  for (const o of obstacles) {
+    if (o.alpha < 0.05) continue;
+    const r = o.size / 2 + PAD;
+    if (mid < o.y - r || mid > o.y + r) continue;
+    const chord = Math.sqrt(Math.max(0, r * r - (mid - o.y) ** 2));
+    const x0 = Math.max(0, o.x - chord);
+    const x1 = Math.min(W, o.x + chord);
     if (x1 > x0) ranges.push({ start: x0, end: x1 });
   }
-
-  // 병합
   ranges.sort((a, b) => a.start - b.start);
   const merged = [];
   for (const r of ranges) {
-    if (merged.length && r.start <= merged[merged.length - 1].end) {
-      merged[merged.length - 1].end = Math.max(merged[merged.length - 1].end, r.end);
-    } else {
-      merged.push({ ...r });
-    }
+    const last = merged[merged.length - 1];
+    if (last && r.start <= last.end) last.end = Math.max(last.end, r.end);
+    else merged.push({ ...r });
   }
   return merged;
 }
 
-/* ── blocked의 여집합 → 사용가능 슬롯 ── */
-function invertRanges(blocked, W) {
+function freeSlots(y, W) {
   const slots = [];
   let cur = 0;
-  for (const b of blocked) {
-    if (b.start - cur > 20) slots.push({ start: cur, end: b.start });
+  for (const b of blockedRanges(y, W)) {
+    if (b.start - cur > 10) slots.push({ start: cur, end: b.start });
     cur = b.end;
   }
-  if (W - cur > 20) slots.push({ start: cur, end: W });
+  if (W - cur > 10) slots.push({ start: cur, end: W });
   return slots;
 }
 
-/* ── 꽃 SVG 그리기 ── */
-function drawFlower(ns, cx, cy, size) {
-  const s  = size / 100;
-  const g  = document.createElementNS(ns, 'g');
-  g.setAttribute('class', 'flower-group');
-  g.setAttribute('transform', `translate(${cx - size/2}, ${cy - size/2}) scale(${s})`);
+/* ── 레이아웃 계산 ── */
+function computeLayout(W) {
+  const segs = [];
+  let y = 0;
+  for (let pi = 0; pi < PARAGRAPHS.length; pi++) {
+    const words = PARAGRAPHS[pi].split(/\s+/).filter(Boolean);
+    let wi = 0;
+    while (wi < words.length) {
+      for (const slot of freeSlots(y, W)) {
+        let x = slot.start, first = true;
+        while (wi < words.length) {
+          const word  = words[wi];
+          const wordW = measure(word);
+          const need  = first ? wordW : SPACE_W + wordW;
+          if (x + need > slot.end - PAD) break;
+          segs.push({ text: word, x, y, cx: x + wordW / 2, cy: y + LINE_H / 2 });
+          x += need; wi++; first = false;
+        }
+      }
+      y += LINE_H;
+      if (y > 9000) break;
+    }
+    if (pi < PARAGRAPHS.length - 1) y += PARA_GAP;
+  }
+  return { segs, totalH: y };
+}
 
-  const inner = `
-    <!-- 줄기 -->
-    <line x1="50" y1="100" x2="50" y2="58" stroke="#000" stroke-width="1.5"/>
-    <line x1="50" y1="85"  x2="34" y2="72" stroke="#000" stroke-width="1"/>
-    <line x1="50" y1="78"  x2="66" y2="66" stroke="#000" stroke-width="1"/>
-    <!-- 잎 -->
-    <ellipse cx="26" cy="68" rx="12" ry="5" fill="none" stroke="#000" stroke-width="1"
-             transform="rotate(-35 26 68)"/>
-    <ellipse cx="74" cy="63" rx="12" ry="5" fill="none" stroke="#000" stroke-width="1"
-             transform="rotate(35 74 63)"/>
-    <!-- 꽃 -->
-    <g transform="translate(50,32)">
-      <ellipse cx="0" cy="-13" rx="5" ry="11" fill="none" stroke="#000" stroke-width="1.2" transform="rotate(0)"/>
-      <ellipse cx="0" cy="-13" rx="5" ry="11" fill="none" stroke="#000" stroke-width="1.2" transform="rotate(72)"/>
-      <ellipse cx="0" cy="-13" rx="5" ry="11" fill="none" stroke="#000" stroke-width="1.2" transform="rotate(144)"/>
-      <ellipse cx="0" cy="-13" rx="5" ry="11" fill="none" stroke="#000" stroke-width="1.2" transform="rotate(216)"/>
-      <ellipse cx="0" cy="-13" rx="5" ry="11" fill="none" stroke="#000" stroke-width="1.2" transform="rotate(288)"/>
-      <circle cx="0" cy="0" r="4.5" fill="none" stroke="#000" stroke-width="1.2"/>
-      <circle cx="0" cy="0" r="1.8" fill="#000"/>
-    </g>
-  `;
-  g.innerHTML = inner;
+/* ── 꽃 SVG 엘리먼트 생성 ── */
+function makeFlower(cx, cy, size, alpha) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const r  = size / 2;
+  const g  = document.createElementNS(ns, 'g');
+  g.setAttribute('pointer-events', 'none');
+  g.setAttribute('opacity', alpha);
+
+  const petalRy = r * 0.70;
+  const petalRx = r * 0.28;
+  const offsetY = -(r - petalRy + r * 0.06);
+
+  for (let i = 0; i < 5; i++) {
+    const el = document.createElementNS(ns, 'ellipse');
+    el.setAttribute('cx', cx);
+    el.setAttribute('cy', cy + offsetY);
+    el.setAttribute('rx', petalRx);
+    el.setAttribute('ry', petalRy);
+    el.setAttribute('fill', 'none');
+    el.setAttribute('stroke', '#000');
+    el.setAttribute('stroke-width', '0.8');
+    el.setAttribute('transform', `rotate(${i * 72} ${cx} ${cy})`);
+    g.appendChild(el);
+  }
+  const c1 = document.createElementNS(ns, 'circle');
+  c1.setAttribute('cx', cx); c1.setAttribute('cy', cy);
+  c1.setAttribute('r', r * 0.22);
+  c1.setAttribute('fill', 'none');
+  c1.setAttribute('stroke', '#000');
+  c1.setAttribute('stroke-width', '0.8');
+  g.appendChild(c1);
+
+  const c2 = document.createElementNS(ns, 'circle');
+  c2.setAttribute('cx', cx); c2.setAttribute('cy', cy);
+  c2.setAttribute('r', r * 0.09);
+  c2.setAttribute('fill', '#000');
+  g.appendChild(c2);
+
   return g;
 }
 
-/* ── 클릭: 단어 위치에 꽃 추가 + 텍스트 재배치 ── */
-svg.addEventListener('click', e => {
+/* ── 렌더 ── */
+function render() {
+  const W = containerW;
+  if (!W) return;
+  const ns = 'http://www.w3.org/2000/svg';
+  const { segs, totalH } = computeLayout(W);
+
+  svgEl.setAttribute('viewBox', `0 0 ${W} ${totalH + 20}`);
+  svgEl.setAttribute('height', totalH + 20);
+  svgEl.innerHTML = '';
+
+  for (const seg of segs) {
+    const t = document.createElementNS(ns, 'text');
+    t.setAttribute('x', seg.x);
+    t.setAttribute('y', seg.y + FONT_SIZE);
+    t.setAttribute('class', 'word');
+    t.dataset.cx = seg.cx;
+    t.dataset.cy = seg.cy;
+    t.textContent = seg.text;
+    svgEl.appendChild(t);
+  }
+
+  for (const o of obstacles) {
+    if (o.alpha < 0.02) continue;
+    svgEl.appendChild(makeFlower(o.x, o.y, o.size, o.alpha));
+  }
+}
+
+/* ── 애니메이션 루프 ── */
+function tick(ts) {
+  const svgRect = svgEl.getBoundingClientRect();
+  const vbW     = parseFloat(svgEl.getAttribute('viewBox').split(' ')[2]);
+  const vbH     = parseFloat(svgEl.getAttribute('height'));
+  const scaleX  = vbW / svgRect.width;
+  const scaleY  = vbH / svgRect.height;
+
+  for (const f of animFlowers) {
+    const dt = f.lastTs ? Math.min((ts - f.lastTs) / 16, 3) : 1;
+    f.lastTs  = ts;
+    f.vy += 0.13 * dt;
+    f.vx  = (f.vx + f.drift * dt) * 0.995;
+    f.px += f.vx * dt;
+    f.py += f.vy * dt;
+    f.t  += dt;
+    f.alpha        = Math.max(0, 1 - Math.pow(f.t / 120, 3.0));
+    f.obs.x        = f.originX + f.px * scaleX;
+    f.obs.y        = f.originY + f.py * scaleY;
+    f.obs.alpha    = f.alpha;
+  }
+
+  // 끝난 꽃 정리
+  animFlowers = animFlowers.filter(f => f.alpha > 0.02);
+  obstacles   = obstacles.filter(o => o.static || o.alpha > 0.02);
+
+  render();
+
+  if (animFlowers.length) rafId = requestAnimationFrame(tick);
+  else rafId = null;
+}
+
+/* ── 클릭 ── */
+svgEl.addEventListener('click', e => {
   const word = e.target.closest('.word');
   if (!word) return;
 
-  const W   = cont.clientWidth - 48;
-  const sx  = parseFloat(word.getAttribute('data-sx'));
-  const sy  = parseFloat(word.getAttribute('data-sy'));
+  const cx = parseFloat(word.dataset.cx);
+  const cy = parseFloat(word.dataset.cy);
 
-  // 뷰박스 좌표 → 실제 SVG 내부 좌표 (viewBox가 1:1이므로 동일)
-  flowers.push({ x: sx, y: sy, size: FLOWER_SIZE });
+  // 고정 꽃
+  obstacles.push({ id: Math.random(), x: cx, y: cy, size: STATIC_SIZE, alpha: 1, static: true });
 
-  renderLayout();
+  // 튀어오르는 꽃 1~2개
+  const count = 1 + Math.floor(Math.random() * 2);
+  for (let i = 0; i < count; i++) {
+    const obs = { id: Math.random(), x: cx, y: cy, size: ANIM_SIZE, alpha: 1, static: false };
+    obstacles.push(obs);
+    animFlowers.push({
+      obs,
+      originX: cx, originY: cy,
+      px: 0, py: 0,
+      vx: (Math.random() - 0.5) * 2,
+      vy: -(3.5 + Math.random() * 2),
+      drift: (Math.random() - 0.5) * 0.02,
+      t: 0, alpha: 1, lastTs: null,
+    });
+  }
+
+  render();
+  if (!rafId) rafId = requestAnimationFrame(tick);
 });
 
-window.addEventListener('resize', renderLayout);
-init();
-</script>
+window.addEventListener('resize', () => {
+  containerW = cont.clientWidth - 48;
+  render();
+});
 
+document.fonts.ready.then(() => {
+  mct.font = FONT_STR;
+  _cache.clear();
+  containerW = cont.clientWidth - 48;
+  render();
+});
+</script>
 </body>
 </html>
