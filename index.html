@@ -269,12 +269,12 @@ function tick(ts) {
   for (const f of animFlowers) {
     const dt = f.lastTs ? Math.min((ts - f.lastTs) / 16, 3) : 1;
     f.lastTs  = ts;
-    f.vy += 0.13 * dt;
-    f.vx  = (f.vx + f.drift * dt) * 0.995;
+    f.vy += 0.1 * dt;
+    f.vx  = (f.vx + f.drift * dt) * 0.5;
     f.px += f.vx * dt;
     f.py += f.vy * dt;
     f.t  += dt;
-    f.alpha        = Math.max(0, 1 - Math.pow(f.t / 120, 3.0));
+    f.alpha        = Math.max(0, 1 - Math.pow(f.t / 90, 2.0));
     f.obs.x        = f.originX + f.px * scaleX;
     f.obs.y        = f.originY + f.py * scaleY;
     f.obs.alpha    = f.alpha;
@@ -282,7 +282,7 @@ function tick(ts) {
 
   // 끝난 꽃 정리
   animFlowers = animFlowers.filter(f => f.alpha > 0.02);
-  obstacles   = obstacles.filter(o => o.static || o.alpha > 0.02);
+  obstacles   = obstacles.filter(o => o.static || o.alpha > 0.1);
 
   render();
 
@@ -311,7 +311,7 @@ svgEl.addEventListener('click', e => {
       originX: cx, originY: cy,
       px: 0, py: 0,
       vx: (Math.random() - 0.5) * 2,
-      vy: -(3.5 + Math.random() * 2),
+      vy: -(3 + Math.random() * 2),
       drift: (Math.random() - 0.5) * 0.02,
       t: 0, alpha: 1, lastTs: null,
     });
