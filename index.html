@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>메밀꽃 필 무렵</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+width: 100%;
+background: #fff;
+font-family: ‘Nanum Myeongjo’, serif;
+overflow-x: hidden;
+-webkit-tap-highlight-color: transparent;
+}
+
+#container {
+position: relative;
+padding: 40px 24px 80px;
+}
+
+#layout-svg {
+width: 100%;
+display: block;
+overflow: visible;
+}
+
+.word {
+font-family: ‘Nanum Myeongjo’, serif;
+font-size: 16px;
+fill: #000;
+cursor: pointer;
+}
+
+.flower-group {
+pointer-events: none;
+}
+</style>
+
+</head>
+<body>
+<div id="container">
+  <svg id="layout-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+</div>
+
+<script type="module">
+import { prepare, layout } from 'https://esm.sh/@chenglou/pretext@0.1.3';
+
+/* ── 텍스트 ── */
+const TEXT = `메밀꽃 필 무렵 여름 장이란 애시당초에 글러서, 해는 아직 중천에 있건만 장판은 벌써 쓸쓸하고 더운 햇발이 벌여 놓은 전 휘장 밑으로 등줄기를 훅훅 볶는다. 파장 기분이 난 지 오래다. 그러기에 예서 저서 사람들이 흩어져 버리고 있어도 허 생원은 마음이 다 부서졌다는 기색도 아니었다. 산 너머 남의 들에 물이라도 들면 그만이지, 반날 동안이나 허탕만 치다 돌아가는 것들이라 따라갈 사람도 없다. 허 생원은 기어이 동이를 낚아 세웠다. 그래, 올 장에도 닭 한 마리 흥정을 못 했느냐. 동이는 조금 발끈하는 눈치였으나 허 생원의 말이 귀에 선 까닭에 멈칫하고 있었다. 달이 어지간히 기울어졌다. 산허리는 온통 메밀밭이어서 피기 시작한 꽃이 소금을 뿌린 듯이 흐뭇한 달빛에 숨이 막힐 지경이다. 붉은 대궁이 향기같이 애잔하고, 나귀들의 걸음도 시원하다. 길이 좁은 까닭에 세 사람은 나귀를 타고 외줄로 늘어섰다. 봉평은 지금도 바뀌지 않았으리라. 예전이나 이제나 달이 뜨는 봉평은 언제나 그리운 곳으로 마음속에 남아 있는 것이었다. 메밀꽃이 핀 밤은 참으로 잔인하리만치 아름다워서, 보는 이의 마음까지 하얗게 씻어 내는 것 같았다.`;
+
+/* ── 상수 ── */
+const FONT_SIZE   = 16;
+const LINE_H      = 26;
+const FLOWER_SIZE = 80;   // 꽃 하나의 점유 반경 (px)
+const PAD         = 4;    // 글자와 꽃 사이 여백
+
+const svg    = document.getElementById('layout-svg');
+const cont   = document.getElementById('container');
+
+/* ── 꽃 목록 [{x, y}] — 뷰박스 좌표 ── */
+let flowers = [];
+
+/* ── Pretext prepare (폰트 로드 후) ── */
+let prepared;
+
+async function init() {
+  // 폰트 로드 대기
+  await document.fonts.ready;
+  prepared = prepare(TEXT, { font: `${FONT_SIZE}px "Nanum Myeongjo"` });
+  renderLayout();
+}
+
+/* ────────────────────────────────────────
+   핵심: 꽃 위치를 obstacle로 삼아
+   각 줄에서 꽃과 겹치는 구간을 피해
+   텍스트를 배치
+──────────────────────────────────────── */
+function renderLayout() {
+  const W = cont.clientWidth - 48;   // 24px 패딩 양쪽
+
+  // 꽃이 없으면 단순 layout
+  const lines = layoutWithObstacles(W);
+
+  svg.innerHTML = '';
+  const ns = 'http://www.w3.org/2000/svg';
+
+  // 총 높이 계산
+  let maxY = 0;
+  for (const seg of lines) {
+    if (seg.y + LINE_H > maxY) maxY = seg.y + LINE_H;
+  }
+  svg.setAttribute('viewBox', `0 0 ${W} ${maxY + 20}`);
+  svg.setAttribute('height', maxY + 20);
+
+  // 텍스트 세그먼트 렌더
+  for (const seg of lines) {
+    const t = document.createElementNS(ns, 'text');
+    t.setAttribute('x', seg.x);
+    t.setAttribute('y', seg.y + FONT_SIZE);
+    t.setAttribute('class', 'word');
+    t.setAttribute('data-sx', seg.x + seg.w / 2);
+    t.setAttribute('data-sy', seg.y + LINE_H / 2);
+    t.textContent = seg.text;
+    svg.appendChild(t);
+  }
+
+  // 꽃 렌더 (텍스트 위에)
+  for (const f of flowers) {
+    const g = drawFlower(ns, f.x, f.y, f.size);
+    svg.appendChild(g);
+  }
+}
+
+/* ── 줄마다 꽃 obstacle을 피해 단어를 배치 ── */
+function layoutWithObstacles(W) {
+  if (!prepared) return [];
+
+  const words  = TEXT.split(/\s+/).filter(Boolean);
+  const result = [];
+
+  // 오프스크린 캔버스로 단어 너비 측정 (Pretext 내부와 동일한 엔진 활용)
+  const mc  = document.createElement('canvas');
+  const mct = mc.getContext('2d');
+  mct.font  = `${FONT_SIZE}px "Nanum Myeongjo"`;
+
+  function ww(word) { return mct.measureText(word).width; }
+  function sw()     { return ww(' '); }
+
+  let y   = 0;
+  let wi  = 0;
+  const SPACE = sw();
+
+  while (wi < words.length) {
+    // 이 줄(y)에서 꽃들이 차지하는 x 구간 목록
+    const blocked = getBlockedRanges(y, W);
+
+    // 사용 가능한 x 슬롯들 (꽃을 피한 구간)
+    const slots = invertRanges(blocked, W);
+
+    let placed = false;
+    for (const slot of slots) {
+      let x = slot.start;
+      // 이 슬롯 안에서 단어 최대한 채우기
+      let first = true;
+      while (wi < words.length) {
+        const word  = words[wi];
+        const wordW = ww(word);
+        const need  = first ? wordW : SPACE + wordW;
+
+        if (x + need > slot.end - PAD) break;
+
+        result.push({ text: word, x: first ? x : x, y, w: wordW });
+        x    += need;
+        wi   += 1;
+        first = false;
+      }
+      placed = true;
+    }
+
+    if (!placed || slots.length === 0) {
+      // 이 줄 전체가 막혀있으면 그냥 넘어감
+    }
+
+    y += LINE_H;
+    if (y > 5000) break; // 안전장치
+  }
+
+  return result;
+}
+
+/* ── y줄에서 꽃들이 차지하는 x 범위 반환 ── */
+function getBlockedRanges(y, W) {
+  const ranges = [];
+  const lineTop    = y;
+  const lineBottom = y + LINE_H;
+
+  for (const f of flowers) {
+    const fy = f.y;
+    const fr = f.size / 2 + PAD;
+
+    // 이 줄이 꽃의 수직 범위와 겹치는지
+    if (lineBottom < fy - fr || lineTop > fy + fr) continue;
+
+    // x 방향 차단 구간
+    const dy   = Math.min(Math.abs(lineTop - fy), Math.abs(lineBottom - fy));
+    const chord = Math.sqrt(Math.max(0, fr * fr - dy * dy));
+    const x0   = Math.max(0,  f.x - chord);
+    const x1   = Math.min(W,  f.x + chord);
+    if (x1 > x0) ranges.push({ start: x0, end: x1 });
+  }
+
+  // 병합
+  ranges.sort((a, b) => a.start - b.start);
+  const merged = [];
+  for (const r of ranges) {
+    if (merged.length && r.start <= merged[merged.length - 1].end) {
+      merged[merged.length - 1].end = Math.max(merged[merged.length - 1].end, r.end);
+    } else {
+      merged.push({ ...r });
+    }
+  }
+  return merged;
+}
+
+/* ── blocked의 여집합 → 사용가능 슬롯 ── */
+function invertRanges(blocked, W) {
+  const slots = [];
+  let cur = 0;
+  for (const b of blocked) {
+    if (b.start - cur > 20) slots.push({ start: cur, end: b.start });
+    cur = b.end;
+  }
+  if (W - cur > 20) slots.push({ start: cur, end: W });
+  return slots;
+}
+
+/* ── 꽃 SVG 그리기 ── */
+function drawFlower(ns, cx, cy, size) {
+  const s  = size / 100;
+  const g  = document.createElementNS(ns, 'g');
+  g.setAttribute('class', 'flower-group');
+  g.setAttribute('transform', `translate(${cx - size/2}, ${cy - size/2}) scale(${s})`);
+
+  const inner = `
+    <!-- 줄기 -->
+    <line x1="50" y1="100" x2="50" y2="58" stroke="#000" stroke-width="1.5"/>
+    <line x1="50" y1="85"  x2="34" y2="72" stroke="#000" stroke-width="1"/>
+    <line x1="50" y1="78"  x2="66" y2="66" stroke="#000" stroke-width="1"/>
+    <!-- 잎 -->
+    <ellipse cx="26" cy="68" rx="12" ry="5" fill="none" stroke="#000" stroke-width="1"
+             transform="rotate(-35 26 68)"/>
+    <ellipse cx="74" cy="63" rx="12" ry="5" fill="none" stroke="#000" stroke-width="1"
+             transform="rotate(35 74 63)"/>
+    <!-- 꽃 -->
+    <g transform="translate(50,32)">
+      <ellipse cx="0" cy="-13" rx="5" ry="11" fill="none" stroke="#000" stroke-width="1.2" transform="rotate(0)"/>
+      <ellipse cx="0" cy="-13" rx="5" ry="11" fill="none" stroke="#000" stroke-width="1.2" transform="rotate(72)"/>
+      <ellipse cx="0" cy="-13" rx="5" ry="11" fill="none" stroke="#000" stroke-width="1.2" transform="rotate(144)"/>
+      <ellipse cx="0" cy="-13" rx="5" ry="11" fill="none" stroke="#000" stroke-width="1.2" transform="rotate(216)"/>
+      <ellipse cx="0" cy="-13" rx="5" ry="11" fill="none" stroke="#000" stroke-width="1.2" transform="rotate(288)"/>
+      <circle cx="0" cy="0" r="4.5" fill="none" stroke="#000" stroke-width="1.2"/>
+      <circle cx="0" cy="0" r="1.8" fill="#000"/>
+    </g>
+  `;
+  g.innerHTML = inner;
+  return g;
+}
+
+/* ── 클릭: 단어 위치에 꽃 추가 + 텍스트 재배치 ── */
+svg.addEventListener('click', e => {
+  const word = e.target.closest('.word');
+  if (!word) return;
+
+  const W   = cont.clientWidth - 48;
+  const sx  = parseFloat(word.getAttribute('data-sx'));
+  const sy  = parseFloat(word.getAttribute('data-sy'));
+
+  // 뷰박스 좌표 → 실제 SVG 내부 좌표 (viewBox가 1:1이므로 동일)
+  flowers.push({ x: sx, y: sy, size: FLOWER_SIZE });
+
+  renderLayout();
+});
+
+window.addEventListener('resize', renderLayout);
+init();
+</script>
+
+</body>
+</html>
